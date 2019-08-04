@@ -1,6 +1,6 @@
 {
-  "name": "mysql-scheme-convert-golang-model",
-  "version": "1.0.0",
+  "name": "mysql2gomodel",
+  "version": "1.0.1",
   "description": "Convert MySQL CREATE TABLE statements to golang model for gorm and more ...",
   "main": "index.js",
   "scripts": {
@@ -11,10 +11,22 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/cute-angelia/mysql-scheme-convert-golang-model"
+    "url": "git+https://github.com/cute-angelia/mysql-scheme-convert-golang-model.git"
   },
   "homepage": "https://github.com/cute-angelia/mysql-scheme-convert-golang-model",
   "dependencies": {
     "tape": "^4.2.0"
-  }
+  },
+  "bugs": {
+    "url": "https://github.com/cute-angelia/mysql-scheme-convert-golang-model/issues"
+  },
+  "keywords": [
+    "mysql",
+    "golang-model",
+    "gorm",
+    "mysql-scheme",
+    "golang-gorm"
+  ],
+  "author": "rose2099.c@gmail.com",
+  "license": "ISC"
 }

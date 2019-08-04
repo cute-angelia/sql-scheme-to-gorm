@@ -1,13 +1,14 @@
-# mysql-scheme-convert-golang-model
+# mysql2gomodel
 
+mysql-scheme-convert-golang-model
 mysql sql 结构转化成 golang model for gorm ...
 
 ### CLI usage Example
 
 ```
-$ mysql-protobuf [input-file]
+$ mysql2gomodel [input-file]
 
-$ mysql-protobuf schema.sql > schema.go
+$ mysql2gomodel schema.sql > schema.go
 
 ----- print -----
 package model
@@ -25,7 +26,7 @@ type CadModel struct {
 ### JS usage
 
 ```
-var convert = require('mysql-protobuf')
+var convert = require('mysql2gomodel')
 var file = fs.readFileSync('schema.sql').toString()
 console.log(convert(file))
 ```
