@@ -6,9 +6,9 @@ mysql sql 结构转化成 golang model for gorm ...
 ### CLI usage Example
 
 ```
-$ mysql2gomodel [input-file]
+$ mysql-model [input-file]
 
-$ mysql2gomodel schema.sql > schema.go
+$ mysql-model schema.sql > schema.go
 
 ----- print -----
 package model
