@@ -16,6 +16,7 @@ var onfield = function (f, result) {
     result.push(fnameUp + ' ' + f.type + " \`" + `json:"` + f.name + `" gorm:"column:` + f.name + `"` + "\`");
   }
   //result.push((prefix ? prefix + ' ' : '') + (f.map === 'map' ? '' : f.type + ' ') + f.name + ' = ' + f.tag + opts + ';')
+
   return result
 }
 
@@ -51,6 +52,13 @@ var onmessage = function (m, result) {
   })
 
   result.push('}', '')
+
+  mNameUp = m.name.replace(m.name[0], m.name[0].toLowerCase());
+  result.push(`func (` + m.name + `Model) TableName() string { `);
+  result.push(`    return "` + mNameUp + `"`);
+  result.push(`}`);
+  result.push(``);
+
   return result
 }
 
