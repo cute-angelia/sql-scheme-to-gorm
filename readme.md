@@ -3,6 +3,10 @@
 mysql-scheme-convert-golang-model
 mysql sql 结构转化成 golang model for gorm ...
 
+### install
+
+npm i -g mysql2gomodel
+
 ### CLI usage Example
 
 ```
