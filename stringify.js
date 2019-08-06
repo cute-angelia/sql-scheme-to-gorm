@@ -1,3 +1,10 @@
+var snaketoCase = function (str) {
+  var re = /_(\w)/g;
+  return str.replace(re, function ($0, $1) {
+    return $1.toUpperCase();
+  });
+}
+
 var onfield = function (f, result) {
   var prefix = f.repeated ? 'repeated' : f.required ? 'required' : ''
   if (f.type === 'map') prefix = 'map<' + f.map.from + ',' + f.map.to + '>'
@@ -21,7 +28,7 @@ var onfield = function (f, result) {
 }
 
 var onmessage = function (m, result) {
-  result.push('type ' + m.name + 'Model struct { ')
+  result.push('type ' + snaketoCase(m.name) + 'Model struct { ')
 
   if (!m.enums) m.enums = []
   m.enums.forEach(function (e) {
@@ -54,7 +61,7 @@ var onmessage = function (m, result) {
   result.push('}', '')
 
   mNameUp = m.name.replace(m.name[0], m.name[0].toLowerCase());
-  result.push(`func (` + m.name + `Model) TableName() string { `);
+  result.push(`func (` + snaketoCase(m.name) + `Model) TableName() string { `);
   result.push(`    return "` + mNameUp + `"`);
   result.push(`}`);
   result.push(``);
