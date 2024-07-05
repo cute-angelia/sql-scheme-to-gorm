@@ -34,7 +34,7 @@ var onfield = function (f, result) {
   } else {
     gormArrays.push(f.typestr)
   }
-  if (f.default.length > 0) {
+  if (f.default) {
     gormArrays.push("default:" + f.default)
   }
   if (f.comment.length > 0) {

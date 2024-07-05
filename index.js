@@ -82,7 +82,7 @@ function Field(data, tag) {
     type: null,
     tag: tag,
     repeated: false,
-    default: "", // 默认
+    default: undefined, // 默认
     comment: "", // 注释
     auto_increment: false, // 自增
     unsigned: false,
@@ -111,7 +111,14 @@ function Field(data, tag) {
 
   for (let i = 0; i < tokens.length; i += 2) {
     if (tokens[i] == "DEFAULT") {
-      field.default = tokens[i + 1];
+      var defaultValue = tokens[i + 1];
+      if (defaultValue != "NULL") {
+        if (field.type.indexOf("int") >= 0) {
+          defaultValue = defaultValue.replace(/[^0-9]/g, '');
+          defaultValue = defaultValue * 1
+        }
+        field.default = defaultValue;
+      }
     }
 
     if (tokens[i] == "COMMENT") {
@@ -127,7 +134,7 @@ function Field(data, tag) {
     }
   }
 
-  // console.log(tokensObj, field)
+  // console.log(field)
 
   return field
 }
