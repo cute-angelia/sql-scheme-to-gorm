@@ -5,7 +5,7 @@
 
 ### install
 
-npm i -g sql-to-gorm
+`npm i sql-to-gorm --location=global`
 
 ### CLI usage Example
 
@@ -16,8 +16,11 @@ $ sql-to-gorm [input-file]
 # 写入文件
 $ sql-to-gorm schema.sql > schema.go
 
+```
 
------ print -----
+demo ----- print -----
+
+```
 package model
 
 type TaskSyncPaopaoTwitterModel struct {
@@ -34,7 +37,4 @@ type TaskSyncPaopaoTwitterModel struct {
 func (TaskSyncPaopaoTwitterModel) TableName() string {
 	return "task_sync_paopao_twitter"
 }
-
 ```
-
-
