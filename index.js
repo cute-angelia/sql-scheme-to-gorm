@@ -1,14 +1,5 @@
 var stringifyObj = require('./stringify')
 
-var mappings = {
-  'bigint': 'int64',
-  'integer': 'int32',
-  'text': 'string',
-  'real': 'float',
-  'date': 'string',
-  'boolean': 'bool'
-}
-
 // from https://github.com/michalbe/sql-create-table-to-json/blob/master/index.js
 var removeComments = function (data) {
   data = data.replace(/\/\*(.*)/g, '').replace(/([ \t]*\n){3,}/g, '\n\n');
@@ -36,7 +27,8 @@ module.exports = function (data) {
       result.messages.push(Message(tableName, fields))
     }
   })
-  //console.log(result, result.messages[0].fields)
+
+  // console.log(result, result.messages[0].fields)
 
   return stringifyObj(result)
 }
@@ -89,56 +81,25 @@ function Field(data, tag) {
     name: null,
     type: null,
     tag: tag,
-    repeated: false
+    repeated: false,
+    default: "", // 默认
+    comment: "", // 注释
+    auto_increment: false, // 自增
+    unsigned: false,
+    typestr: "", // 数据库类型
   }
 
-  var tokens = data.trim().split(/\s+/)
+  var tokens = createStatusArray(data.trim())
 
-  //console.log(tokens);
+  // console.log(tokens);
 
   field.name = normalize(tokens[0])
 
-  // mysql
-  var imap = '';
-  if (typeof (tokens[1]) != "undefined") {
-
-    if (tokens[1].indexOf('int') >= 0) {
-      for (var v in tokens) {
-        if (tokens[v] == 'unsigned') {
-          imap = 'uint32';
-        }
-      }
-      imap = imap || 'int32';
-    }
-
-    if (tokens[1].indexOf('long') >= 0) {
-      for (var v in tokens) {
-        if (tokens[v] == 'unsigned') {
-          imap = 'uint64';
-        }
-      }
-      imap = imap || 'int64';
-    }
-
-    if (tokens[1].indexOf('datetime') >= 0 || tokens[1].indexOf('timestamp') >= 0) {
-      imap = 'string';
-    }
-
-    if (tokens[1].indexOf('float') >= 0) {
-      imap = 'float';
-    }
-
-    if (tokens[1].indexOf('double') >= 0) {
-      imap = 'double';
-    }
-
-    if (tokens[1].indexOf('varchar') >= 0 || tokens[1].indexOf('text') >= 0) {
-      imap = 'string';
-    }
-
-  }
+  // mysql 类型
+  var imap = getType(tokens);
 
   field.type = imap || 'string'
+  field.typestr = tokens[1]
 
   // if (data.match(/.*NOT\s+NULL.*/i)) {
   //   field.required = true
@@ -148,9 +109,103 @@ function Field(data, tag) {
   //   field.options.default = default_match[1]
   // }
 
+  for (let i = 0; i < tokens.length; i += 2) {
+    if (tokens[i] == "DEFAULT") {
+      field.default = tokens[i + 1];
+    }
+
+    if (tokens[i] == "COMMENT") {
+      field.comment = tokens[i + 1];
+    }
+
+    if (tokens[i] == "unsigned") {
+      field.unsigned = true
+    }
+
+    if (tokens[i] == "AUTO_INCREMENT") {
+      field.auto_increment = true
+    }
+  }
+
+  // console.log(tokensObj, field)
+
   return field
+}
+
+
+var mappings = {
+  'integer': 'int32',
+  'int': 'int32',
+  'tinyint': 'int32',
+
+  'mediumint': 'int64',
+  'bigint': 'int64',
+  'timestamp': 'int64',
+
+  'double': 'float64',
+  'decimal': 'float64',
+  'float': 'float64',
+
+  'date': 'string',
+  'varchar': 'string',
+}
+
+// 分隔 createStatusArray
+function createStatusArray(statusString) {
+  return statusString.match(/('[^']*'|`[^`]*`|\S+)/g);
+}
+
+function getType(tokens) {
+  const typestr = tokens[1] || ""
+  if (typestr.length == 0 || typeof (typestr) == "undefined") {
+    return "string"
+  }
+  var typesplict = typestr.split("(")
+
+  // 类型
+  const type = typesplict[0]
+
+  // 是否可以负数
+  var isUnsigned = false
+  for (var v in tokens) {
+    if (tokens[v] == 'unsigned') {
+      isUnsigned = true
+    }
+  }
+  var imap = mappings[type] || 'string';
+  if (isUnsigned && imap.indexOf('int') >= 0) {
+    imap = 'u' + imap
+  }
+  // console.log(imap, type);
+  return imap
 }
 
 function normalize(string) {
   return string.replace(/['`"]/ig, '')
 }
+
+// tokens 示例
+// ['`id`', 'int(11)', 'NOT', 'NULL', 'AUTO_INCREMENT']
+// ['`username`', 'varchar(50)', 'DEFAULT', 'NULL']
+// ['`nickname`', 'varchar(80)', 'DEFAULT', 'NULL']
+// [
+//   '`last_post_id`',
+//   'bigint(20)',
+//   'DEFAULT',
+//   "'0'",
+//   'COMMENT',
+//   "'泡泡最后id'"
+// ]
+// ['`bucket`', 'varchar(30)', 'DEFAULT', 'NULL']
+// ['`object_dir`', 'varchar(80)', 'DEFAULT', 'NULL']
+// [
+//   '`status`',
+//   'tinyint(2)',
+//   'DEFAULT',
+//   "'1'",
+//   'COMMENT',
+//   "'1:on;",
+//   '0',
+//   ":off'"
+// ]
+// ['`dateline`', 'datetime', 'DEFAULT', 'NULL']

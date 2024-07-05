@@ -17,11 +17,37 @@ var onfield = function (f, result) {
   if (opts) opts = ' [' + opts + ']'
 
   fnameUp = f.name.replace(f.name[0], f.name[0].toUpperCase());
-  if (f.name == "id") {
-    result.push(fnameUp + ' ' + f.type + " \`" + `json:"id" gorm:"primary_key"` + "\`");
-  } else {
-    result.push(fnameUp + ' ' + f.type + " \`" + `json:"` + f.name + `" gorm:"column:` + f.name + `"` + "\`");
+
+  var str = snaketoCase(fnameUp) + ' ' + f.type + " \`" + `json:"` + f.name + `" `;
+
+  // gorm 内容
+  str += `gorm:"`
+  var gormArrays = [
+    "column:" + f.name,
+  ];
+  if (f.auto_increment) {
+    gormArrays.push("primaryKey")
+    gormArrays.push("autoIncrement:true")
   }
+  if (f.unsigned) {
+    gormArrays.push(f.typestr + " unsigned")
+  } else {
+    gormArrays.push(f.typestr)
+  }
+  if (f.default.length > 0) {
+    gormArrays.push("default:" + f.default)
+  }
+  if (f.comment.length > 0) {
+    gormArrays.push("comment:" + f.comment)
+  }
+
+  str += gormArrays.join(";")
+  str += `"`
+
+  str += "\`"
+  result.push(str)
+  // add end
+
   //result.push((prefix ? prefix + ' ' : '') + (f.map === 'map' ? '' : f.type + ' ') + f.name + ' = ' + f.tag + opts + ';')
 
   return result
@@ -191,20 +217,20 @@ var indent = function (lvl) {
 package public
 
 type CampusModel struct {
-	Id               int32  `json:"id" gorm:"primary_key"`
-	Name             string `json:"name" gorm:"column:name"`
-	OrganizationName string `json:"organization_name" gorm:"column:organization_name"`
-	Phone            string `json:"phone" gorm:"column:phone"`
-	Price            string `json:"price" gorm:"column:price"`
-	Gold             string `json:"gold" gorm:"column:gold"`
-	ConsumeGold      string `json:"consume_gold" gorm:"column:consume_gold"`
-	FrozenGold       string `json:"frozen_gold" gorm:"column:frozen_gold"`
-	CreateTime       string `json:"create_time" gorm:"column:create_time"`
-	UpdateTime       string `json:"update_time" gorm:"column:update_time"`
+  Id               int32  `json:"id" gorm:"primary_key"`
+  Name             string `json:"name" gorm:"column:name"`
+  OrganizationName string `json:"organization_name" gorm:"column:organization_name"`
+  Phone            string `json:"phone" gorm:"column:phone"`
+  Price            string `json:"price" gorm:"column:price"`
+  Gold             string `json:"gold" gorm:"column:gold"`
+  ConsumeGold      string `json:"consume_gold" gorm:"column:consume_gold"`
+  FrozenGold       string `json:"frozen_gold" gorm:"column:frozen_gold"`
+  CreateTime       string `json:"create_time" gorm:"column:create_time"`
+  UpdateTime       string `json:"update_time" gorm:"column:update_time"`
 }
 
 func (CampusModel) TableName() string {
-	return "campus"
+  return "campus"
 }
 
  */

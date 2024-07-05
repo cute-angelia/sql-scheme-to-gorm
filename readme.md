@@ -1,36 +1,40 @@
-# mysql2gomodel
+# sql 结构转 gorm model
 
-mysql-scheme-convert-golang-model
-mysql sql 结构转化成 golang model for gorm ...
+把 sql 创建语句转成 gorm model
+
 
 ### install
 
-npm i -g mysql2gomodel
+npm i -g sql-to-gorm
 
 ### CLI usage Example
 
 ```
-$ mysql-model [input-file]
+# 打印
+$ sql-to-gorm [input-file]
 
-$ mysql-model schema.sql > schema.go
+# 写入文件
+$ sql-to-gorm schema.sql > schema.go
+
 
 ----- print -----
 package model
 
-type CadModel struct {
-  Id int32 `json:"id" gorm:"primary_key"`
-  Name string `json:"name" gorm:"column:name"`
-  Url string `json:"url" gorm:"column:url"`
-  Img string `json:"img" gorm:"column:img"`
-  Status int32 `json:"status" gorm:"column:status"`
-  Dateline string `json:"dateline" gorm:"column:dateline"`
+type TaskSyncPaopaoTwitterModel struct {
+	Id         int32  `json:"id" gorm:"column:id;int(11) unsigned;comment:'自增id'"`
+	Username   string `json:"username" gorm:"column:username;varchar(50);default:NULL"`
+	Nickname   string `json:"nickname" gorm:"column:nickname;varchar(80);default:NULL"`
+	LastPostId int64  `json:"last_post_id" gorm:"column:last_post_id;bigint(20);default:'0';comment:'泡泡最后id'"`
+	Bucket     string `json:"bucket" gorm:"column:bucket;varchar(30);default:NULL"`
+	ObjectDir  string `json:"object_dir" gorm:"column:object_dir;varchar(80);default:NULL"`
+	Status     int32  `json:"status" gorm:"column:status;tinyint(2);default:'1';comment:'1:on 0 :off'"`
+	Dateline   string `json:"dateline" gorm:"column:dateline;datetime;default:NULL"`
 }
+
+func (TaskSyncPaopaoTwitterModel) TableName() string {
+	return "task_sync_paopao_twitter"
+}
+
 ```
 
-### JS usage
 
-```
-var convert = require('mysql2gomodel')
-var file = fs.readFileSync('schema.sql').toString()
-console.log(convert(file))
-```
