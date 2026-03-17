@@ -1,12 +1,12 @@
 var stringifyObj = require('./stringify')
 
-// from https://github.com/michalbe/sql-create-table-to-json/blob/master/index.js
 var removeComments = function (data) {
   data = data.replace(/\/\*(.*)/g, '').replace(/([ \t]*\n){3,}/g, '\n\n');
   return data;
 }
 
-module.exports = function (data) {
+module.exports = function (data, options) {
+  options = options || {}  // 默认空对象
   var data = removeComments(data)
   var schemas = data.split('\n\n')
 
@@ -24,7 +24,7 @@ module.exports = function (data) {
 
       var fields = schema.substring(schema.indexOf('(')).trim()
       fields = fields.replace(/^\(/g, '').replace(/\);?$/g, '')
-      result.messages.push(Message(tableName, fields))
+      result.messages.push(Message(tableName, fields, options))
     }
   })
 
@@ -33,7 +33,7 @@ module.exports = function (data) {
   return stringifyObj(result)
 }
 
-function Message(name, fields) {
+function Message(name, fields, options) {
   var message = {
     name: name,
     enums: [],
@@ -70,13 +70,14 @@ function Message(name, fields) {
 
   message.fields = newLines.map(function (line) {
     tag += 1
-    return Field(line, tag)
+    return Field(line, tag, options)
   });
 
   return message
 }
 
-function Field(data, tag) {
+function Field(data, tag, options) {
+  options = options || {}
   var field = {
     name: null,
     type: null,
@@ -110,7 +111,7 @@ function Field(data, tag) {
   // }
 
   for (let i = 0; i < tokens.length; i += 2) {
-    if (tokens[i] == "DEFAULT") {
+    if (tokens[i] == "DEFAULT" && !options.noDefault) {
       var defaultValue = tokens[i + 1];
       if (defaultValue != "NULL") {
         if (field.type.indexOf("int") >= 0) {

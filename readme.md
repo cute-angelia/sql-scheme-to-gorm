@@ -2,7 +2,6 @@
 
 把 sql 创建语句转成 gorm model
 
-
 ### install
 
 `npm i sql-to-gorm --location=global`
@@ -15,6 +14,12 @@ $ sql-to-gorm [input-file]
 
 # 写入文件
 $ sql-to-gorm schema.sql > schema.go
+
+
+# 选项
+
+// 不解析默认值， gorm 加 defalut 坑很多
+--no-default=true 或者简写 --nd
 
 ```
 

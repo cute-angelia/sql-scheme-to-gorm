@@ -1,6 +1,6 @@
 {
   "name": "sql-to-gorm",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "Convert MySQL CREATE TABLE statements to golang gorm model",
   "main": "index.js",
   "scripts": {
@@ -15,6 +15,7 @@
   },
   "homepage": "https://github.com/cute-angelia/sql-scheme-to-gorm",
   "dependencies": {
+    "minimist": "^1.2.8",
     "tape": "^4.2.0"
   },
   "bugs": {
